@@ -3,4 +3,49 @@
 *:before,
 *:after {
   box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+* {
+  margin: 0;
+  border: none;
+  padding: 0;
+  font-size: 1rem;
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+}
+
+#top-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.siteName a {
+  font-size: 2rem;
+  color: black;
+  text-decoration: none;
+}
+
+#tools a {
+  color: black;
+  text-decoration: none;
+}
+
+nav ul {
+  display: flex;
+  justify-content: space-between;
+  background-color: black;
+  padding: 1rem;
+}
+
+nav li {
+  list-style: none;
+  font-weight: 700;
+  color: white;
 }
