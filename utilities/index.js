@@ -57,6 +57,50 @@ Util.buildClassificationGrid = async function(data){
   return grid
 }
 
+/* **************************************
+* Build the detail view HTML
+* ************************************ */
+Util.buildDetailView = async function(data, carName){
+  /*
+    inv_id: 11,
+    inv_make: 'Mechanic',
+    inv_model: 'Special',
+    inv_year: '1964',
+    inv_description: 'Not sure where this car came from. however with a little tlc it will run as good a new.',
+    inv_image: '/images/vehicles/mechanic.jpg',
+    inv_thumbnail: '/images/vehicles/mechanic-tn.jpg',
+    inv_price: '100',
+    inv_miles: 200125,
+    inv_color: 'Rust',
+    classification_id: 5,
+    classification_name: 'Sedan'
+  */
+  let details;
+  if (data.inv_id != null) {
+    const currency = new Intl.NumberFormat("en-US", {style: "currency", currency: "USD", currencyDisplay: "narrowSymbol"});
+    const plainNumber = new Intl.NumberFormat("en-US");
+    details = `<div id="detailPageContent">`; // Begin detailPageContent
+    details += `<img id="carPic" src="${data.inv_image}" alt="carName">`;
+    details += `<div id="carDetails"><h1>${carName}</h1>`; // Begin carDetails
+    details += `<div id="detailHighlights"><div id="carMilage"><h2>Milage</h2>
+      <p>${plainNumber.format(data.inv_miles)}</p></div>`; // Begin detailHighlights
+    details += `<div id="carPrice"><h2>Price</h2>
+      <p>${currency.format(data.inv_price)}</p></div></div>`; // End detailHighlights
+    details += `<p id="carDesc">${data.inv_description}</p>`;
+    details += `<ul id="detailList"><li><strong>Milage:</strong> ${plainNumber.format(data.inv_miles)}</li>`; // Begin detailList
+    details += `<li><strong>Year:</strong> ${data.inv_year}</li>`;
+    details += `<li><strong>Make:</strong> ${data.inv_make}</li>`;
+    details += `<li><strong>Model:</strong> ${data.inv_model}</li>`;
+    details += `<li><strong>Color:</strong> ${data.inv_color}</li>`;
+    details += `<li><strong>Class:</strong> ${data.classification_name}</li></ul>`; // End detailList
+    details += `</div>`; // End carDetails
+    details += `</div>`; // End detailPageContent
+  } else {
+    details += `<p class="notice">Sorry, no vehicle was found.</p>`;
+  }
+  return details;
+}
+
 /* ****************************************
  * Middleware For Handling Errors
  * Wrap other function in this for 
