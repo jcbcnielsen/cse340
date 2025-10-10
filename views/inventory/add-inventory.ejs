@@ -1,0 +1,60 @@
+<% if (title) { %>
+<h1><%= title %></h1>
+<% } else {
+  res.redirect('/')
+} %>
+
+<%- messages() %>
+
+<% if (errors) { %>
+    <ul class="notice">
+        <% errors.array().forEach(error => { %>
+            <li><%= error.msg %></li>
+        <% }); %>
+    </ul>
+<% } %>
+
+<form id="addInvForm" action="/inv/add-inv" method="post">
+    <fieldset>
+        <label>Classification:<%- classSelect %></label>
+        <label>Make:<input type="text" id="addInvMake" name="inv_make"
+            required pattern="\w+" value="<% locals.inv_make %>"></label>
+        <label>Model:<input type="text" id="addInvModel" name="inv_model"
+            required pattern="\w+" value="<% locals.inv_model %>"></label>
+        <label>Year:<input type="number" id="addInvYear" name="inv_year" min="1900" max="<%= nextYear %>"
+            required value="<% locals.inv_year %>"></label>
+        <label>Description:<textarea id="addInvDesc" name="inv_description"
+            required value="<% locals.inv_description %>"></textarea></label>
+        <label>Image URL: <span>URL must begin with "/images/vehicles/" and contain no spaces</span>
+            <input type="text" id="addInvImage" name="inv_image" required pattern="\/images\/vehicles\/\S+\.\S+"
+            <% if (locals.inv_image) { %> value="<% locals.inv_image %>"
+            <% } else { %> value="/images/vehicles/no-image.png" <% } %>></label>
+        <label>Thumbnail URL: <span>URL must begin with "/images/vehicles/" and contain no spaces</span>
+            <input type="text" id="addInvThumb" name="inv_thumbnail" required pattern="\/images\/vehicles\/\S+\.\S+"
+            <% if (locals.inv_thumbnail) { %> value="<% locals.inv_thumbnail %>"
+            <% } else { %> value="/images/vehicles/no-image-tn.png" <% } %>></label>
+        <label>Price (USD):<input type="number" id="addInvPrice" name="inv_price" min="0"
+            required value="<% locals.inv_price %>"></label>
+        <label>Miles:<input type="number" id="addInvMiles" name="inv_miles" min="0"
+            required value="<% locals.inv_miles %>"></label>
+        <label>Color:<input type="text" id="addInvColor" name="inv_color"
+            required value="<% locals.inv_color %>"></label>
+        <button type="submit">Add Inventory</button>
+    </fieldset>
+</form>
+
+<!--
+inv_id: 11,
+inv_make: 'Mechanic',
+inv_model: 'Special',
+inv_year: '1964',
+inv_description: 'Not sure where this car came from. however with a little tlc it will run as good a new.',
+inv_image: '/images/vehicles/mechanic.jpg',
+inv_thumbnail: '/images/vehicles/mechanic-tn.jpg',
+inv_price: '100',
+inv_miles: 200125,
+inv_color: 'Rust',
+classification_id: 5,
+
+classification_name: 'Sedan'
+-->

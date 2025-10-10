@@ -126,3 +126,85 @@ footer {
         grid-template-columns: 1fr 1fr;
     }
 }
+
+/* ************ Forms ************ */
+
+form {
+  fieldset {
+    width: 90%;
+    max-width: 20rem;
+    margin: 0 auto;
+    border: 1px solid black;
+    border-radius: .5rem;
+    background-color: lightgray;
+    padding: 0 1rem 1rem;
+
+    label {
+      display: block;
+      width: 100%;
+      margin-top: 1rem;
+
+      span {
+        display: block;
+        width: 100%;
+        max-width: 18rem;
+        text-wrap: wrap;
+        font-style: italic;
+      }
+
+      select,
+      input[type="text"],
+      input[type="email"],
+      input[type="number"],
+      input[type="password"],
+      textarea {
+        display: block;
+        width: 90%;
+        max-width: 18rem;
+        height: 3rem;
+        margin-top: .5rem;
+        border: 1px solid black;
+        border-radius: .5rem;
+        background-color: white;
+        padding: .5rem;
+      }
+
+      textarea {
+        min-height: 3rem;
+        border-bottom-right-radius: 0;
+      }
+    }
+
+    button[type="submit"] {
+      display: block;
+      width: 90%;
+      max-width: 18rem;
+      height: 3rem;
+      margin-top: 1.5rem;
+      border: 1px solid black;
+      border-radius: .5rem;
+      background-color: #cfdfff;
+      padding: .5rem;
+
+      &:hover {
+        background-color: #afbfff;
+      }
+    }
+  }
+}
+
+/* ************ Account and Management Pages ************ */
+
+#noAccount {
+  margin-top: 1rem;
+}
+
+#managementLinks {
+  li {
+    list-style: none;
+
+    &:first-of-type {
+      margin-bottom: 1rem;
+    }
+  }
+}

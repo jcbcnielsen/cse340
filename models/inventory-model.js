@@ -42,4 +42,83 @@ async function getInventoryById(inv_id) {
   }
 }
 
-module.exports = {getClassifications,getInventoryByClassificationId, getInventoryById}
+/* ***************************
+ *  Add a new classification
+ * ************************** */
+async function addClassification(classification_name) {
+  try {
+    const sql = `INSERT INTO public.classification (classification_name) VALUES ('${classification_name}') RETURNING *`;
+    return await pool.query(sql);
+  } catch (error) {
+    return error.message;
+  }
+}
+
+/* ***************************
+ *  Check for an exsisting classification
+ * ************************** */
+async function checkExsistingClass(classification_name) {
+  try {
+    const sql = `SELECT * FROM public.classification WHERE classification_name = '${classification_name}'`;
+    const classification = await pool.query(sql);
+    return classification.rowCount;
+  } catch (error) {
+    return error.message;
+  }
+}
+
+/* ***************************
+ *  Add a new inventory item
+ * ************************** */
+async function addInventory(body) {
+  const {
+    inv_make,
+    inv_model,
+    inv_year,
+    inv_description,
+    inv_image,
+    inv_thumbnail,
+    inv_price,
+    inv_miles,
+    inv_color,
+    classification_id
+  } = body;
+  try {
+    const sql = `
+      INSERT INTO public.inventory (
+        inv_make, 
+        inv_model,
+        inv_year,
+        inv_description,
+        inv_image,
+        inv_thumbnail,
+        inv_price,
+        inv_miles,
+        inv_color,
+        classification_id
+      ) VALUES (
+        '${inv_make}',
+        '${inv_model}',
+        ${inv_year},
+        '${inv_description}',
+        '${inv_image}',
+        '${inv_thumbnail}',
+        ${inv_price},
+        ${inv_miles},
+        '${inv_color}',
+        ${classification_id}
+      )`;
+    return await pool.query(sql);
+  } catch (error) {
+    return error.message;
+  }
+}
+
+module.exports = {
+  getClassifications,
+  getInventoryByClassificationId,
+  getInventoryById,
+  addClassification,
+  checkExsistingClass,
+  addInventory
+}

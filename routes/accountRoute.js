@@ -2,11 +2,21 @@
 const express = require("express");
 const router = new express.Router(); 
 const utilities = require("../utilities/");
-const regValidate = require("../utilities/account-validation");
+const accountValidate = require("../utilities/account-validation");
 const accountController = require("../controllers/accountController");
 
 // Route to build login view
 router.get("/login", utilities.handleErrors(accountController.buildLogin));
+
+// Route to post the login form
+router.post(
+    "/login",
+    accountValidate.loginTools(),
+    accountValidate.checkLoginData,
+    (req, res) => {
+        res.status(200).send("login process");
+    }
+);
 
 // Route to build registration view
 router.get("/register", utilities.handleErrors(accountController.buildRegistration));
@@ -14,8 +24,8 @@ router.get("/register", utilities.handleErrors(accountController.buildRegistrati
 // Route to post the registration form
 router.post(
     "/register",
-    regValidate.registrationTools(),
-    regValidate.checkRegData,
+    accountValidate.registrationTools(),
+    accountValidate.checkRegData,
     utilities.handleErrors(accountController.registerAccount)
 );
 
