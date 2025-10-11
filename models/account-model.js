@@ -25,4 +25,24 @@ async function checkExsistingEmail(account_email){
     }
 }
 
-module.exports = { registerAccount, checkExsistingEmail }
+/* **********************
+*   Get account info using an email
+* ********************* */
+async function getAccountByEmail(account_email) {
+    try {
+        const sql = `
+            SELECT account_id, account_firstname, account_lastname, account_email, account_type, account_password
+            FROM public.account
+            WHERE account_email = '${account_email}'`;
+        const result = await pool.query(sql);
+        return result.rows[0];
+    } catch (error) {
+        return new Error("No matching email found.");
+    }
+}
+
+module.exports = {
+    registerAccount,
+    checkExsistingEmail,
+    getAccountByEmail
+}

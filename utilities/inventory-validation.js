@@ -6,7 +6,7 @@ const validate = {}
 /* ******************************
  * Classification Addition Validation Rules
  * ***************************** */
-validate.classificationTools = () => {
+validate.classificationRules = () => {
     return [
         body("classification_name")
             .trim()
@@ -45,9 +45,9 @@ validate.checkClassAddData = async (req, res, next) => {
 }
 
 /* ******************************
- * Inventory Addition Validation Rules
+ * Inventory Item Validation Rules
  * ***************************** */
-validate.inventoryTools = () => {
+validate.inventoryRules = () => {
     const nextYear = new Date().getFullYear() + 1;
     return [
         // classification id is required and must be an int
@@ -88,27 +88,22 @@ validate.inventoryTools = () => {
 
         // image url is required and must be a string
         body("inv_image")
-            .trim()
-            .escape()
-            .notEmpty()
-            .isLength({ min: 1 })
+            .matches(/\/images\/vehicles\/\S+\.\S+/)
             .withMessage("Please provide an image url."),
 
         // thumbnail url is required and must be a string
         body("inv_thumbnail")
-            .trim()
-            .notEmpty()
-            .isLength({ min: 1 })
+            .matches(/\/images\/vehicles\/\S+\.\S+/)
             .withMessage("Please provide an thumbnail url."),
         
         // price is required and must be a number
         body("inv_price")
-            .isInt()
+            .isInt({ min: 0 })
             .withMessage("Please provide a price."),
         
         // miles is required and must be a number
         body("inv_miles")
-            .isInt()
+            .isInt({ min: 0 })
             .withMessage("Please provide a milage."),
 
         // color is required and must be a string
@@ -149,6 +144,53 @@ validate.checkInvAddData = async (req, res, next) => {
             nav,
             classSelect,
             nextYear,
+            inv_make,
+            inv_model,
+            inv_year,
+            inv_description,
+            inv_image,
+            inv_thumbnail,
+            inv_price,
+            inv_miles,
+            inv_color,
+            classification_id
+        });
+        return;
+    }
+    next();
+}
+
+/* ******************************
+ * Check data and return errors or continue to editing inventory
+ * ***************************** */
+validate.checkInvEditData = async (req, res, next) => {
+    const {
+        inv_id,
+        inv_make,
+        inv_model,
+        inv_year,
+        inv_description,
+        inv_image,
+        inv_thumbnail,
+        inv_price,
+        inv_miles,
+        inv_color,
+        classification_id
+    } = req.body;
+    let errors = [];
+    errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        let nav = await utilities.getNav();
+        const invName = `${inv_year} ${inv_make} ${inv_model}`;
+        const classSelect = await utilities.buildClassificationList(classification_id);
+        const nextYear = new Date().getFullYear() + 1;
+        res.render("inventory/edit-inventory", {
+            errors,
+            title: `Edit ${invName}`,
+            nav,
+            classSelect,
+            nextYear,
+            inv_id,
             inv_make,
             inv_model,
             inv_year,

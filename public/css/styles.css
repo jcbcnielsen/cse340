@@ -38,17 +38,35 @@ h2 {
   text-decoration: none;
 }
 
-nav ul {
-  display: flex;
-  justify-content: space-between;
-  background-color: black;
-  padding: 1rem;
+nav {
+  ul {
+    display: flex;
+    justify-content: space-between;
+    background-color: black;
+    padding: 1rem;
+
+    li {
+      margin: auto .2rem;
+      list-style: none;
+
+      a {
+        font-weight: 700;
+        color: #cfdfff;
+
+        &:visited {
+          color: #dfcfff;
+        }
+      }
+    }
+  }
 }
 
-nav li {
-  list-style: none;
-  font-weight: 700;
-  color: white;
+.notice {
+  margin-bottom: 1rem;
+  li {
+    list-style: none;
+    font-style: italic;
+  }
 }
 
 footer {
@@ -58,21 +76,21 @@ footer {
 /* ************ Classification Page ************ */
 
 #inv-display {
-  & li {
+  li {
     list-style: none;
   }
 
-  & img {
+  img {
     display: block;
     max-width: 200px;
     margin: auto;
   }
 
-  & h2 {
+  h2 {
     text-align: center;
   }
 
-  & span {
+  span {
     display: block;
     text-align: center;
   }
@@ -94,13 +112,13 @@ footer {
   background-color: lightgrey;
   padding: 1rem;
 
-  & div {
+  div {
     border: 1px solid white;
     background-color: black;
     padding: 1rem;
     color: white;
 
-    & p {
+    p {
       text-align: right;
       font-weight: 700;
     }
@@ -114,7 +132,7 @@ footer {
 #detailList {
   margin-left: 1rem;
 
-  & li {
+  li {
     list-style: none;
   }
 }
@@ -202,9 +220,38 @@ form {
 #managementLinks {
   li {
     list-style: none;
+    margin-bottom: 1rem;
+  }
+}
 
-    &:first-of-type {
-      margin-bottom: 1rem;
+#manageInvInstructions {
+  p {
+    margin: 1rem 0;
+  }
+}
+
+#invDisplay {
+  margin: 1rem auto 0;
+  border-collapse: collapse;
+
+  thead {
+    border-top: 1px solid black;
+    background-color: #cfdfff;
+  }
+
+  tr {
+    border-left: 1px solid black;
+
+    &:nth-of-type(even) {
+      background-color: lightgrey;
     }
+  }
+
+  th,
+  td {
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
+    padding: .5rem;
+    text-align: left;
   }
 }

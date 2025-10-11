@@ -1,11 +1,14 @@
 const utilities = require("../utilities/");
 const accountModel = require("../models/account-model");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
+let accountCont = {};
 
 /* ****************************************
 *  Deliver login view
 * *************************************** */
-async function buildLogin(req, res, next){
+accountCont.buildLogin = async function (req, res, next) {
     let nav = await utilities.getNav();
     res.render("account/login", {
         title: "Login",
@@ -15,9 +18,50 @@ async function buildLogin(req, res, next){
 }
 
 /* ****************************************
+ *  Process login request
+ * ************************************ */
+accountCont.loginAccount = async function (req, res) {
+    let nav = await utilities.getNav();
+    const { account_email, account_password } = req.body;
+    const accountData = await accountModel.getAccountByEmail(account_email);
+    if (!accountData) {
+        req.flash("notice", "Please check your credentials and try again.");
+        res.status(400).render("account/login", {
+            title: "Login",
+            nav,
+            errors: null,
+            account_email
+        });
+        return;
+    }
+    try {
+        if (await bcrypt.compare(account_password, accountData.account_password)) {
+            delete accountData.account_password;
+            const accessToken = jwt.sign(accountData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 3600000 });
+            if (process.env.NODE_ENV === "development") {
+                res.cookie("jwt", accessToken, { httpOnly: true, maxAge: 3600000 });
+            } else {
+                res.cookie("jwt", accessToken, { httpOnly: true, maxAge: 3600000, secure: true });
+            }
+            return res.redirect("/account/");
+        } else {
+            req.flash("notice", "Please check your credentials and try again.");
+            res.status(400).render("account/login", {
+                title: "Login",
+                nav,
+                errors: null,
+                account_email
+            });
+        }
+    } catch (error) {
+        throw new Error("Access Forbidden");
+    }
+}
+
+/* ****************************************
 *  Deliver registration view
 * *************************************** */
-async function buildRegistration(req, res, next){
+accountCont.buildRegistration = async function (req, res, next) {
     let nav = await utilities.getNav();
     res.render("account/register", {
         title: "Sign Up",
@@ -29,7 +73,7 @@ async function buildRegistration(req, res, next){
 /* ****************************************
 *  Process Registration
 * *************************************** */
-async function registerAccount(req, res) {
+accountCont.registerAccount = async function (req, res) {
     let nav = await utilities.getNav();
     const {
         account_firstname,
@@ -76,4 +120,13 @@ async function registerAccount(req, res) {
     }
 }
 
-module.exports = { buildLogin, buildRegistration, registerAccount }
+accountCont.buildManagement = async function (req, res, next) {
+    let nav = await utilities.getNav();
+    res.render("account/manage", {
+        title: "Your Account",
+        nav,
+        errors: null
+    })
+}
+
+module.exports = accountCont;

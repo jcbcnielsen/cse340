@@ -1,16 +1,17 @@
 const pool = require("../database/")
+const invModel = {}
 
 /* ***************************
  *  Get all classification data
  * ************************** */
-async function getClassifications(){
+invModel.getClassifications = async function (){
   return await pool.query("SELECT * FROM public.classification ORDER BY classification_name")
 }
 
 /* ***************************
  *  Get all inventory items and classification_name by classification_id
  * ************************** */
-async function getInventoryByClassificationId(classification_id) {
+invModel.getInventoryByClassificationId = async function (classification_id) {
   try {
     const data = await pool.query(
       `SELECT * FROM public.inventory AS i 
@@ -28,7 +29,7 @@ async function getInventoryByClassificationId(classification_id) {
 /* ***************************
  *  Get a single inventory item by inv_id
  * ************************** */
-async function getInventoryById(inv_id) {
+invModel.getInventoryById = async function (inv_id) {
   try {
     const data = await pool.query(
       `SELECT * FROM public.inventory AS i
@@ -45,7 +46,7 @@ async function getInventoryById(inv_id) {
 /* ***************************
  *  Add a new classification
  * ************************** */
-async function addClassification(classification_name) {
+invModel.addClassification = async function (classification_name) {
   try {
     const sql = `INSERT INTO public.classification (classification_name) VALUES ('${classification_name}') RETURNING *`;
     return await pool.query(sql);
@@ -57,7 +58,7 @@ async function addClassification(classification_name) {
 /* ***************************
  *  Check for an exsisting classification
  * ************************** */
-async function checkExsistingClass(classification_name) {
+invModel.checkExsistingClass = async function (classification_name) {
   try {
     const sql = `SELECT * FROM public.classification WHERE classification_name = '${classification_name}'`;
     const classification = await pool.query(sql);
@@ -70,19 +71,18 @@ async function checkExsistingClass(classification_name) {
 /* ***************************
  *  Add a new inventory item
  * ************************** */
-async function addInventory(body) {
-  const {
-    inv_make,
-    inv_model,
-    inv_year,
-    inv_description,
-    inv_image,
-    inv_thumbnail,
-    inv_price,
-    inv_miles,
-    inv_color,
-    classification_id
-  } = body;
+invModel.addInventory = async function (
+  inv_make,
+  inv_model,
+  inv_year,
+  inv_description,
+  inv_image,
+  inv_thumbnail,
+  inv_price,
+  inv_miles,
+  inv_color,
+  classification_id
+) {
   try {
     const sql = `
       INSERT INTO public.inventory (
@@ -114,11 +114,42 @@ async function addInventory(body) {
   }
 }
 
-module.exports = {
-  getClassifications,
-  getInventoryByClassificationId,
-  getInventoryById,
-  addClassification,
-  checkExsistingClass,
-  addInventory
+/* ***************************
+ *  Update an inventory item
+ * ************************** */
+invModel.editInventory = async function (
+  inv_id,
+  inv_make,
+  inv_model,
+  inv_year,
+  inv_description,
+  inv_image,
+  inv_thumbnail,
+  inv_price,
+  inv_miles,
+  inv_color,
+  classification_id
+) {
+  try {
+    const sql = `
+      UPDATE public.inventory
+      SET
+        inv_make = '${inv_make}', 
+        inv_model = '${inv_model}',
+        inv_year = ${inv_year},
+        inv_description = '${inv_description}',
+        inv_image = '${inv_image}',
+        inv_thumbnail = '${inv_thumbnail}',
+        inv_price = ${inv_price},
+        inv_miles = ${inv_miles},
+        inv_color = '${inv_color}',
+        classification_id = ${classification_id}
+      WHERE inv_id = ${inv_id} RETURNING *`;
+    const data = await pool.query(sql);
+    return data.rows[0];
+  } catch (error) {
+    return error.message;
+  }
 }
+
+module.exports = invModel;

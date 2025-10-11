@@ -10,3 +10,19 @@
     <li><a href="./add-class">Add New Classification</a></li>
     <li><a href="./add-inv">Add New Inventory Item</a></li>
 </ul>
+
+<div id="manageInvInstructions">
+  <h2>Manage Inventory</h2>
+  <p>Select a classification from the list to see the items belonging to the classification.</p>
+</div>
+
+<form>
+  <fieldset>
+    <label>Classification:<%- classSelect %></label>
+  </fieldset>
+</form>
+
+<table id="invDisplay"></table>
+<noscript>Javascript must be enabled to use this page.</noscript>
+
+<script src="/js/inventory.js"></script>
