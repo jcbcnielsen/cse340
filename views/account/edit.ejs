@@ -1,0 +1,47 @@
+<% if (title) { %>
+    <h1><%= title %></h1>
+<% } else {
+    res.redirect('/')
+} %>
+
+<%- messages() %>
+
+<% if (errors) { %>
+    <ul class="notice">
+        <% errors.array().forEach(error => { %>
+            <li><%= error.msg %></li>
+        <% }); %>
+    </ul>
+<% } %>
+
+<form id="accountEditForm" action="/account/list/edit" method="post">
+    <fieldset>
+        <label>First Name:<input type="text" id="fname" name="account_firstname" required value="<%= locals.account_firstname %>"></label>
+        <label>Last Name:<input type="text" id="lname" name="account_lastname" required value="<%= locals.account_lastname %>"></label>
+        <label>Email:<input type="email" id="email" name="account_email" required value="<%= locals.account_email %>"></label>
+        <% if (locals.adminAuth) { %>
+            <label>Account Type:<span class="formWarning">Warning: Changing account types may give the account holder much more power over and access to company systems.</span><%- typeSelect %></label>
+        <% } %>
+        <button type="submit">Confirm Edits</button>
+        <input type="hidden" name="account_id" value="<%= locals.account_id %>">
+    </fieldset>
+</form>
+
+<% if (locals.adminAuth) { %>
+    <form id="accountDeleteForm" action="/account/list/delete" method="post">
+        <fieldset>
+            <button type="button" id="accountDeleteDialogOpenButton" class="redButton">Delete Account</button>
+            <dialog id="accountDeleteFormDialog">
+                <p id="accountDeleteWarning" class="formWarning">Warning: Deleting accounts is permanent and cannot be undone. Are you sure you want to delete this account?</p>
+                <div id="accountDeleteFormButtons">
+                    <button type="button" id="accountDeleteDialogCloseButton">No, Go Back.</button>
+                    <button type="submit" id="accountDeleteFormSubButton" class="redButton">Yes, Delete Account.</button>
+                </div>
+            </dialog>
+            <input type="hidden" name="account_id" value="<%= locals.account_id %>">
+        </fieldset>
+    </form>
+
+    <script src="/js/account.js"></script>
+    <noscript>Javascript is required to use this form.</noscript>
+<% } %>

@@ -235,4 +235,30 @@ validate.checkPasswordData = async (req, res, next) => {
     next();
 }
 
+/* ******************************
+ * Check data and return errors or continue to editing
+ * ***************************** */
+validate.checkEditData = async (req, res, next) => {
+    const { account_id, account_firstname, account_lastname, account_email, account_type } = req.body;
+    let errors = [];
+    updateRules(req);
+    errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        let nav = await utilities.getNav();
+        let typeSelect = await utilities.buildAccountTypeSelect(account_type);
+        res.render("account/list/edit", {
+            errors,
+            title: "Account Editor",
+            nav,
+            typeSelect,
+            account_id,
+            account_firstname,
+            account_lastname,
+            account_email
+        });
+        return;
+    }
+    next();
+}
+
 module.exports = validate;

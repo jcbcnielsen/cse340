@@ -242,10 +242,133 @@ accountCont.changePassword = async function (req, res) {
     }
 }
 
+/* ****************************************
+*  Log out of the account
+* *************************************** */
 accountCont.logoutAccount = async function (req, res, next) {
     if (req.cookies.jwt) {
         res.clearCookie("jwt");
         res.redirect("/");
+    }
+}
+
+/* ****************************************
+*  Build the client account list and manager view
+* *************************************** */
+accountCont.buildAccountList = async function (req, res, next) {
+    let nav = await utilities.getNav();
+    let accountTable = await utilities.buildAccountListTable(res.locals.adminAuth);
+    res.render("account/list", {
+        title: "Account Manager",
+        nav,
+        errors: null,
+        accountTable
+    })
+}
+
+/* ****************************************
+*  Build the system account editor view
+* *************************************** */
+accountCont.buildAccountEditor = async function (req, res, next) {
+    let nav = await utilities.getNav();
+    const accountData = await accountModel.getAccountById(req.params.account_id);
+    let typeSelect = await utilities.buildAccountTypeSelect(accountData.account_type);
+    res.render("account/edit", {
+        title: "Account Editor",
+        nav,
+        typeSelect,
+        errors: null,
+        account_id: req.params.account_id,
+        account_firstname: accountData.account_firstname,
+        account_lastname: accountData.account_lastname,
+        account_email: accountData.account_email,
+        account_type: accountData.account_type
+    });
+}
+
+/* ****************************************
+*  Process editing accounts
+* *************************************** */
+accountCont.editAccount = async function (req, res) {
+    const {
+        account_id,
+        account_firstname,
+        account_lastname,
+        account_email
+    } = req.body;
+    let { account_type } = req.body;
+    if (!account_type) {
+        const oldData = await accountModel.getAccountById(account_id);
+        account_type = oldData.account_type;
+    }
+
+    const editResult = await accountModel.editAccount(
+        account_id,
+        account_firstname,
+        account_lastname,
+        account_email,
+        account_type
+    );
+
+    let nav = await utilities.getNav();
+    if (editResult) {
+        let accountTable = await utilities.buildAccountListTable(res.locals.adminAuth);
+        req.flash("notice", "The account information has been edited.");
+        res.status(201).render("account/list", {
+            title: "Account Manager",
+            nav,
+            errors: null,
+            accountTable
+        });
+    } else {
+        let typeSelect = await utilities.buildAccountTypeSelect(account_type);
+        req.flash("notice", "Sorry, editing the account information failed.");
+        res.status(501).render("account/edit", {
+            title: "Account Editor",
+            nav,
+            errors: null,
+            typeSelect,
+            account_id: account_id,
+            account_firstname: account_firstname,
+            account_lastname: account_lastname,
+            account_email: account_email,
+            account_type: account_type
+        });
+    }
+}
+
+/* ****************************************
+*  Process deleting accounts
+* *************************************** */
+accountCont.deleteAccount = async function (req, res) {
+    const { account_id } = req.body;
+    const accountData = await accountModel.getAccountById(account_id);
+    const delResult = await accountModel.deleteAccount(account_id);
+
+    let nav = await utilities.getNav();
+    if (delResult) {
+        let accountTable = await utilities.buildAccountListTable(res.locals.adminAuth);
+        req.flash("notice", "The account has been deleted.");
+        res.status(201).render("account/list", {
+            title: "Account Manager",
+            nav,
+            errors: null,
+            accountTable
+        });
+    } else {
+        let typeSelect = await utilities.buildAccountTypeSelect(account_type);
+        req.flash("notice", "Sorry, deleting the account failed.");
+        res.status(501).render("account/edit", {
+            title: "Account Editor",
+            nav,
+            errors: null,
+            typeSelect,
+            account_id: account_id,
+            account_firstname: accountData.account_firstname,
+            account_lastname: accountData.account_lastname,
+            account_email: accountData.account_email,
+            account_type: accountData.account_type
+        });
     }
 }
 

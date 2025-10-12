@@ -36,7 +36,7 @@ function buildInventoryList(data) {
         dataTable += `
             <tr><td>${element.inv_make} ${element.inv_model}</td>
             <td><a href="/inv/edit/${element.inv_id}" title="Click to update">Modify</a></td>
-            <td><a href="/inv/delete/${element.inv_id}" title="Click to delete">Delete</a></td>`;
+            <td><a href="/inv/delete/${element.inv_id}" title="Click to delete">Delete</a></td></tr>`;
     });
     dataTable += `</tbody>`;
     // display the contents in the inventory management view

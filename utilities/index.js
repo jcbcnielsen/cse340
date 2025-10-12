@@ -1,3 +1,4 @@
+const accountModel = require("../models/account-model");
 const invModel = require("../models/inventory-model")
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
@@ -126,6 +127,54 @@ Util.buildClassificationList = async function (classification_id = null) {
 }
 
 /* ****************************************
+* Build the account list table
+**************************************** */
+Util.buildAccountListTable = async function (adminAuth) {
+  const rows = await accountModel.getAllAccounts();
+  // set up the table head and begin the table body
+  let accountTable = `
+    <thead><tr>
+    <th>First Name</th>
+    <th>Last Name</th>
+    <th>Email</th>
+    <th>Account Type</th>
+    <td>&nbsp;</td></tr></thead><tbody>`;
+  // populate the table body with the account data
+  rows.forEach((row) => {
+    if (row.account_type == "Client" || adminAuth) {
+      console.log(row);
+      accountTable += `
+        <tr class="${row.account_type}"><td>${row.account_firstname}</td><td>${row.account_lastname}</td>
+        <td>${row.account_email}</td><td>${row.account_type}</td>
+        <td><a href="/account/list/edit/${row.account_id}" title="Click to edit">Modify</a></td>`;
+    }
+  });
+  accountTable += `</tbody>`;
+  return accountTable;
+}
+
+/* ****************************************
+* Build the account type list
+**************************************** */
+Util.buildAccountTypeSelect = async function (init_type) {
+  let typeSelect = `
+    <select id="accountTypeSelect" name="account_type" required><option value="Client"`;
+  if (init_type == "Client") {
+    typeSelect += ` selected`;
+  }
+  typeSelect += `>Client</option><option value="Employee"`;
+  if (init_type == "Employee") {
+    typeSelect += ` selected`;
+  }
+  typeSelect += `>Employee</option><option value="Admin"`;
+  if (init_type == "Admin") {
+    typeSelect += ` selected`;
+  }
+  typeSelect += `>Admin</option></select>`;
+  return typeSelect;
+}
+
+/* ****************************************
 * Middleware to check token validity
 **************************************** */
 Util.checkJWTToken = (req, res, next) => {
@@ -143,6 +192,10 @@ Util.checkJWTToken = (req, res, next) => {
         res.locals.loggedIn = 1;
         if (accountData.account_type == "Employee" || accountData.account_type == "Admin") {
           res.locals.emplAuth = 1;
+
+          if (accountData.account_type == "Admin") {
+            res.locals.adminAuth = 1;
+          }
         }
         next();
       }
@@ -170,6 +223,22 @@ Util.checkLogin = (req, res, next) => {
 Util.checkAuthorization = (req, res, next) => {
   try {
     if (res.locals.emplAuth) {
+      next();
+    } else {
+      throw new Error("Access Forbidden");
+    }
+  } catch (error) {
+    req.flash("notice", error.message);
+    return res.redirect("/account/login");
+  }
+}
+
+/* ****************************************
+ * Check Admin access authorization
+ * ************************************ */
+Util.checkAdminAuthorization = (req, res, next) => {
+  try {
+    if (res.locals.adminAuth) {
       next();
     } else {
       throw new Error("Access Forbidden");

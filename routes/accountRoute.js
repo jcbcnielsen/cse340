@@ -65,4 +65,37 @@ router.get(
     utilities.handleErrors(accountController.logoutAccount)
 );
 
+// Route to build the client account list
+router.get(
+    "/list",
+    utilities.checkLogin,
+    utilities.checkAuthorization,
+    utilities.handleErrors(accountController.buildAccountList)
+);
+
+// Route to build the account editing system view
+router.get(
+    "/list/edit/:account_id",
+    utilities.checkLogin,
+    utilities.checkAuthorization,
+    utilities.handleErrors(accountController.buildAccountEditor)
+);
+
+// Route to post the account editing system form
+router.post(
+    "/list/edit/",
+    utilities.checkLogin,
+    utilities.checkAuthorization,
+    accountValidate.checkEditData,
+    utilities.handleErrors(accountController.editAccount)
+);
+
+// Route to post the account deletion form
+router.post(
+    "/list/delete/",
+    utilities.checkLogin,
+    utilities.checkAdminAuthorization,
+    utilities.handleErrors(accountController.deleteAccount)
+);
+
 module.exports = router;

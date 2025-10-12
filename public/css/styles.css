@@ -199,6 +199,8 @@ form {
       }
     }
 
+    #accountDeleteDialogOpenButton,
+    button[type="button"],
     button[type="submit"] {
       display: block;
       width: 90%;
@@ -236,7 +238,7 @@ form {
   }
 }
 
-#invDisplay {
+table {
   margin: 1rem auto 0;
   border-collapse: collapse;
 
@@ -272,6 +274,7 @@ form {
   color: red;
 }
 
+#accountDeleteDialogOpenButton[type="button"],
 .redButton[type="submit"] {
   background-color: rgb(255, 0, 0);
   font-weight: 700;
@@ -286,10 +289,54 @@ form {
 /* ************ Manage and Update Account Pages ************ */
 
 #accountUpdateLink,
+#clientManageLink,
 #invManageLink {
   margin-bottom: 1rem;
 }
 
+#accountDeleteForm,
 #changePasswordForm {
   margin-top: 1rem;
+}
+
+#accountDisplay {
+
+  .Employee {
+    background-color: lightgreen;
+  }
+
+  .Admin {
+    background-color: pink;
+  }
+}
+
+#accountDeleteFormDialog {
+  width: 100%;
+  max-width: 48rem;
+  margin: 12rem auto;
+  border: 1px solid black;
+  border-radius: .5rem;
+  padding: 1rem;
+  background-color: lightgray;
+
+  #accountDeleteWarning {
+    padding: 0 20%;
+    text-align: center;
+  }
+
+  #accountDeleteFormButtons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 1rem;
+
+    button {
+      margin-right: auto;
+      margin-left: auto;
+      font-weight: 700;
+    }
+  }
+}
+
+::backdrop {
+  background-color: rgba(255, 255, 255, .3);
 }
