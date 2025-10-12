@@ -272,18 +272,22 @@ accountCont.buildAccountList = async function (req, res, next) {
 accountCont.buildAccountEditor = async function (req, res, next) {
     let nav = await utilities.getNav();
     const accountData = await accountModel.getAccountById(req.params.account_id);
-    let typeSelect = await utilities.buildAccountTypeSelect(accountData.account_type);
-    res.render("account/edit", {
-        title: "Account Editor",
-        nav,
-        typeSelect,
-        errors: null,
-        account_id: req.params.account_id,
-        account_firstname: accountData.account_firstname,
-        account_lastname: accountData.account_lastname,
-        account_email: accountData.account_email,
-        account_type: accountData.account_type
-    });
+    if (accountData.account_type == "Client" || res.locals.adminAuth) {
+        let typeSelect = await utilities.buildAccountTypeSelect(accountData.account_type);
+        res.render("account/edit", {
+            title: "Account Editor",
+            nav,
+            typeSelect,
+            errors: null,
+            account_id: req.params.account_id,
+            account_firstname: accountData.account_firstname,
+            account_lastname: accountData.account_lastname,
+            account_email: accountData.account_email,
+            account_type: accountData.account_type
+        });
+    } else {
+        res.redirect("/account/list");
+    }
 }
 
 /* ****************************************
