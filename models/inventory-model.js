@@ -152,4 +152,17 @@ invModel.editInventory = async function (
   }
 }
 
+/* ***************************
+ *  Delete an inventory item
+ * ************************** */
+invModel.deleteInventory = async function (inv_id) {
+  try {
+    const sql = `DELETE FROM public.inventory WHERE inv_id = ${inv_id} RETURNING *`;
+    const data = await pool.query(sql);
+    return data;
+  } catch (error) {
+    return error.message;
+  }
+}
+
 module.exports = invModel;

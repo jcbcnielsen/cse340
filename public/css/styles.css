@@ -33,9 +33,15 @@ h2 {
   text-decoration: none;
 }
 
-#tools a {
-  color: black;
-  text-decoration: none;
+#tools {
+  a {
+    color: black;
+    text-decoration: none;
+  }
+  
+  #logoutLink {
+    margin-left: 1rem;
+  }
 }
 
 nav {
@@ -254,4 +260,36 @@ form {
     padding: .5rem;
     text-align: left;
   }
+}
+
+/* ************ Delete Inventory Page ************ */
+
+.formWarning {
+  margin: 1rem;
+  text-wrap: wrap;
+  font-weight: 700;
+  font-style: italic;
+  color: red;
+}
+
+.redButton[type="submit"] {
+  background-color: rgb(255, 0, 0);
+  font-weight: 700;
+  color: white;
+
+  &:hover {
+    border-color: white;
+    background-color: rgb(127, 0, 0);
+  }
+}
+
+/* ************ Manage and Update Account Pages ************ */
+
+#accountUpdateLink,
+#invManageLink {
+  margin-bottom: 1rem;
+}
+
+#changePasswordForm {
+  margin-top: 1rem;
 }

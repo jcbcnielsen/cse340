@@ -120,6 +120,9 @@ accountCont.registerAccount = async function (req, res) {
     }
 }
 
+/* ****************************************
+*  Build the account management view
+* *************************************** */
 accountCont.buildManagement = async function (req, res, next) {
     let nav = await utilities.getNav();
     res.render("account/manage", {
@@ -127,6 +130,123 @@ accountCont.buildManagement = async function (req, res, next) {
         nav,
         errors: null
     })
+}
+
+/* ****************************************
+*  Build the account info update view
+* *************************************** */
+accountCont.buildUpdate = async function (req, res, next) {
+    let nav = await utilities.getNav();
+    const account_id = req.params.account_id;
+    const accountData = await accountModel.getAccountById(account_id);
+    res.render("account/update", {
+        title: "Update Account",
+        nav,
+        errors: null,
+        account_id: account_id,
+        account_firstname: accountData.account_firstname,
+        account_lastname: accountData.account_lastname,
+        account_email: accountData.account_email
+
+    });
+}
+
+/* ****************************************
+*  Process account updates
+* *************************************** */
+accountCont.updateAccount = async function (req, res) {
+    const {
+        account_id,
+        account_firstname,
+        account_lastname,
+        account_email
+    } = req.body;
+    const updResult = await accountModel.updateAccount(
+        account_id,
+        account_firstname,
+        account_lastname,
+        account_email
+    );
+
+    let nav = await utilities.getNav();
+    if (updResult) {
+        req.flash("notice", "Your account information has been updated.");
+        res.status(201).render("account/manage", {
+            title: "Your Account",
+            nav,
+            errors: null
+        });
+    } else {
+        req.flash("notice", "Sorry, updating your account information failed.");
+        res.status(501).render("account/update", {
+            title: "Update Account",
+            nav,
+            errors: null,
+            account_id: account_id,
+            account_firstname: account_firstname,
+            account_lastname: account_lastname,
+            account_email: account_email
+        });
+    }
+}
+
+/* ****************************************
+*  Process password changes
+* *************************************** */
+accountCont.changePassword = async function (req, res) {
+    const { account_id, account_password } = req.body;
+    const accountData = await accountModel.getAccountById(account_id);
+    let nav = await utilities.getNav();
+
+    // Hash the password before storing
+    let hashedPassword;
+    try {
+        // regular password and cost (salt is generated automatically)
+        hashedPassword = await bcrypt.hashSync(account_password, 10);
+    } catch (error) {
+        req.flash("notice", "Sorry, there was an error prossessing the request.");
+        res.status(500).render("account/update", {
+            title: "Update Account",
+            nav,
+            errors: null,
+            account_id: account_id,
+            account_firstname: accountData.account_firstname,
+            account_lastname: accountData.account_lastname,
+            account_email: accountData.account_email
+        });
+    }
+
+    const changeResult = await accountModel.changePassword(
+        account_id,
+        hashedPassword
+    );
+
+    if (changeResult) {
+        req.flash("notice", "Your password has been changed.");
+        res.status(201).render("account/manage", {
+            title: "Your Account",
+            nav,
+            errors: null
+        });
+    } else {
+        req.flash("notice", "Sorry, changing your password failed.");
+        res.status(501).render("account/update", {
+            title: "Update Account",
+            nav,
+            errors: null,
+            account_id: account_id,
+            account_firstname: accountData.account_firstname,
+            account_lastname: accountData.account_lastname,
+            account_email: accountData.account_email
+        });
+    }
+}
+
+accountCont.logoutAccount = async function (req, res, next) {
+    if (req.cookies.jwt) {
+        res.clearCookie("jwt");
+        res.redirect("/");
+    }
 }
 
 module.exports = accountCont;

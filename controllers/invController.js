@@ -206,7 +206,7 @@ invCont.buildInvEditor = async function (req, res, next) {
 }
 
 /* ***************************
- *  Proccess adding inventory
+ *  Proccess editing inventory
  * ************************** */
 invCont.editInventory = async function (req, res) {
   const {
@@ -249,7 +249,7 @@ invCont.editInventory = async function (req, res) {
   } else {
     const nextYear = new Date().getFullYear() + 1;
     req.flash("notice", `Sorry, updating the ${invName} failed.`);
-    req.status(501).render("inventory/edit-inventory", {
+    res.status(501).render("inventory/edit-inventory", {
       title: `Edit ${invName}`,
       nav,
       classSelect,
@@ -266,6 +266,64 @@ invCont.editInventory = async function (req, res) {
       inv_miles,
       inv_color,
       classification_id
+    });
+  }
+}
+
+/* ***************************
+ *  Build inventory delete confirmation
+ * ************************** */
+invCont.buildInvDelete = async function (req, res, next) {
+  let nav = await utilities.getNav();
+  const inv_id = parseInt(req.params.inv_id);
+  const invData = await invModel.getInventoryById(inv_id);
+  const invName = `${invData.inv_year} ${invData.inv_make} ${invData.inv_model}`;
+  res.render("inventory/delete-confirm", {
+    title: `Confirm Deletion: ${invName}`,
+    nav,
+    errors: null,
+    inv_id,
+    inv_make: invData.inv_make,
+    inv_model: invData.inv_model,
+    inv_year: invData.inv_year,
+    inv_price: invData.inv_price,
+  })
+}
+
+/* ***************************
+ *  Proccess deleting inventory
+ * ************************** */
+invCont.deleteInventory = async function (req, res) {
+  const {
+    inv_id,
+    inv_make,
+    inv_model,
+    inv_year,
+    inv_price
+  } = req.body;
+  const deleteResult = await invModel.deleteInventory(inv_id);
+  let nav = await utilities.getNav();
+  const invName = `${inv_year} ${inv_make} ${inv_model}`;
+  const classSelect = await utilities.buildClassificationList();
+  if (deleteResult) {
+    req.flash("notice", `The ${invName} has been deleted.`);
+    res.status(201).render("inventory/manage", {
+      title: "Inventory Management",
+      nav,
+      classSelect,
+      errors: null
+    });
+  } else {
+    req.flash("notice", `Sorry, deleting the ${invName} failed.`);
+    req.status(501).render("inventory/delete-confirm", {
+      title: `Edit ${invName}`,
+      nav,
+      errors: null,
+      inv_id,
+      inv_make,
+      inv_model,
+      inv_year,
+      inv_price
     });
   }
 }

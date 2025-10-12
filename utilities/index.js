@@ -140,7 +140,10 @@ Util.checkJWTToken = (req, res, next) => {
           return res.redirect("/account/login");
         }
         res.locals.accountData = accountData;
-        res.locals.loggedIn = 1
+        res.locals.loggedIn = 1;
+        if (accountData.account_type == "Employee" || accountData.account_type == "Admin") {
+          res.locals.emplAuth = 1;
+        }
         next();
       }
     );
@@ -157,6 +160,22 @@ Util.checkLogin = (req, res, next) => {
     next();
   } else {
     req.flash("notice", "Please log in.");
+    return res.redirect("/account/login");
+  }
+}
+
+/* ****************************************
+ * Check Employee access authorization
+ * ************************************ */
+Util.checkAuthorization = (req, res, next) => {
+  try {
+    if (res.locals.emplAuth) {
+      next();
+    } else {
+      throw new Error("Access Forbidden");
+    }
+  } catch (error) {
+    req.flash("notice", error.message);
     return res.redirect("/account/login");
   }
 }

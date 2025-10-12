@@ -1,0 +1,47 @@
+<% if (title) { %>
+    <h1><%= title %></h1>
+<% } else {
+    res.redirect('/')
+} %>
+
+<%- messages() %>
+
+<% if (errors) { %>
+    <ul class="notice">
+        <% errors.array().forEach(error=> { %>
+            <li><%= error.msg %></li>
+        <% }); %>
+    </ul>
+<% } %>
+
+<form id="deleteInvForm" action="/inv/delete" method="post">
+    <fieldset>
+        <label>Make:<input type="text" id="deleteInvMake" name="inv_make" value="<%= locals.inv_make %>" readonly></label>
+        <label>Model:<input type="text" id="deleteInvModel" name="inv_model" value="<%= locals.inv_model %>" readonly></label>
+        <label>Year:<input type="number" id="deleteInvYear" name="inv_year" value="<%= locals.inv_year %>" readonly></label>
+        <label>Price (USD):<input type="number" id="deleteInvPrice" name="inv_price" value="<%= locals.inv_price %>" readonly></label>
+        
+        <p class="formWarning">Caution - Deleting an inventory item is permanent, and cannot be undone.</p>
+        <button type="submit" id="deleteInvSubmitButton" class="redButton">Confirm Deletion</button>
+        <input type="hidden" id="deleteInvId" name="inv_id"
+            <% if (locals.inv_id) { %>
+                value="<%= locals.inv_id %>"
+            <% } %>>
+    </fieldset>
+</form>
+
+<!--
+inv_id: 11,
+inv_make: 'Mechanic',
+inv_model: 'Special',
+inv_year: '1964',
+inv_description: 'Not sure where this car came from. however with a little tlc it will run as good a new.',
+inv_image: '/images/vehicles/mechanic.jpg',
+inv_thumbnail: '/images/vehicles/mechanic-tn.jpg',
+inv_price: '100',
+inv_miles: 200125,
+inv_color: 'Rust',
+classification_id: 5,
+
+classification_name: 'Sedan'
+-->
